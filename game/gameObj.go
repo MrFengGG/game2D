@@ -13,6 +13,13 @@ type GameObj struct{
 	color mgl32.Vec3
 }
 
+
+func(gameObj *GameObj) GetPosition()(float32,float32){
+	return gameObj.x, gameObj.y
+}
+func(gameObj *GameObj) GetSize()(float32, float32){
+	return gameObj.size[0], gameObj.size[1]
+}
 func(gameObj *GameObj) Draw(renderer *sprite.SpriteRenderer){
 	renderer.DrawSprite(gameObj.texture, mgl32.Vec2{gameObj.x,gameObj.y}, gameObj.size, gameObj.rotate, gameObj.color)
 }

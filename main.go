@@ -43,7 +43,7 @@ func initGlfw() *glfw.Window {
     }
     glfw.WindowHint(glfw.Resizable, glfw.False)
     window, err := glfw.CreateWindow(width, height, windowName, nil, nil)
-
+	window.SetKeyCallback(KeyCallback)
     if err != nil {
             panic(err)
     }
@@ -58,4 +58,12 @@ func initOpenGL(){
 	gl.Viewport(0, 0, width, height);
 	gl.Enable(gl.CULL_FACE);
     gl.Enable(gl.BLEND);
+}
+func KeyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey){
+	if(action == glfw.Press){
+		game2D.Keys[key] = true
+	}
+	if(action == glfw.Release){
+		game2D.Keys[key] = false
+	}
 }

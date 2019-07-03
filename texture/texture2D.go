@@ -2,7 +2,7 @@ package texture
 import(
 	"os"
 	"image"
-	"image/jpeg"
+	"image/png"
 	"image/draw"
 	"errors"
 	"github.com/go-gl/gl/v4.1-core/gl"
@@ -19,7 +19,7 @@ func NewTexture2D(file string, TEXTUREINDEX uint32) *Texture2D{
 		panic(err)
 	}
 
-	img, err := jpeg.Decode(imgFile)
+	img, err := png.Decode(imgFile)
 	if err != nil {
 		panic(err)
 	}
