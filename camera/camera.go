@@ -16,7 +16,7 @@ type Camera2D struct{
 	right       mgl32.Vec3
 	movementSpeed float32
 
-	wordWidth,wordHeight,harfScreenWidth,harfScreenHeight  int32
+	wordWidth,wordHeight,harfScreenWidth,screenHeight  int32
 }
 func NewDefaultCamera(wordHeight,wordWidth,screenWidth,screenHeight int32) *Camera2D{
 	position := mgl32.Vec3{float32(wordWidth/2), float32(wordHeight/2), 0}
@@ -31,7 +31,7 @@ func NewDefaultCamera(wordHeight,wordWidth,screenWidth,screenHeight int32) *Came
 		movementSpeed:movementSpeed,
 		wordHeight:wordHeight,
 		wordWidth:wordWidth,
-		harfScreenHeight:screenHeight/2,
+		screenHeight:screenHeight,
 		harfScreenWidth:screenWidth/2}
 }
 func (camera *Camera2D) GetPosition() mgl32.Vec2{
@@ -52,7 +52,7 @@ func (camera *Camera2D) ProcessKeyboard(direction Direction, deltaTime float32){
 		}
 	}
 	if (direction == DOWN){
-		if(int32(camera.position[1]) < camera.wordHeight){
+		if(int32(int32(camera.position[1]) + camera.screenHeight) < camera.wordHeight){
 			camera.position = camera.position.Add(camera.up.Mul(velocity))
 		}
 	}

@@ -24,7 +24,7 @@ type Game struct{
 	Keys [1024]bool
 }
 func NewGame(width,height int32) *Game{
-	game := Game{width:width, height:height,state:GAME_ACTIVE,camera:camera.NewDefaultCamera(2000000,10000,width,height)}
+	game := Game{width:width, height:height,state:GAME_ACTIVE,camera:camera.NewDefaultCamera(2000,1000,width,height)}
 	return &game
 }
 func (game *Game) Init(){
@@ -38,7 +38,7 @@ func (game *Game) Init(){
 	resource.LoadTexture(gl.TEXTURE0,"./image/stone.png","stone")
 	resource.LoadTexture(gl.TEXTURE0,"./image/soil.png","soil")
 	resource.LoadTexture(gl.TEXTURE0,"./image/man-stand.png","man-stand")
-	game.gameMap = gamemap.NewGameMap(2000000,10000,"123")
+	game.gameMap = gamemap.NewGameMap(2000,10000,"123")
 }
 func (game *Game) ProcessInput(delta float64){
 	if(game.state == GAME_ACTIVE){
