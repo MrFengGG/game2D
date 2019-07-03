@@ -6,7 +6,6 @@ import(
 	"image/draw"
 	"errors"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	"fmt"
 )
 
 type Texture2D struct{
@@ -30,9 +29,7 @@ func NewTexture2D(file string, TEXTUREINDEX uint32) *Texture2D{
 	draw.Draw(rgba, rgba.Bounds(), img, image.Point{0, 0}, draw.Src)
 	
 	var textureID uint32
-	fmt.Println("hahahah")
 	gl.GenTextures(1, &textureID)
-	fmt.Println(textureID)
 	gl.BindTexture(gl.TEXTURE_2D, textureID)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)

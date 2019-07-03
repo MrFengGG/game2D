@@ -1,7 +1,6 @@
 package camera
 import(
 	"github.com/go-gl/mathgl/mgl32"
-	"fmt"
 )
 type Direction int
 const (
@@ -35,6 +34,9 @@ func NewDefaultCamera(wordHeight,wordWidth,screenWidth,screenHeight int32) *Came
 		harfScreenHeight:screenHeight/2,
 		harfScreenWidth:screenWidth/2}
 }
+func (camera *Camera2D) GetPosition() mgl32.Vec2{
+	return mgl32.Vec2{camera.position[0], camera.position[1]}
+}
 //获取view
 func (camera *Camera2D) GetViewMatrix() *float32{
 	target := camera.position.Add(camera.front)
@@ -45,13 +47,11 @@ func (camera *Camera2D) GetViewMatrix() *float32{
 func (camera *Camera2D) ProcessKeyboard(direction Direction, deltaTime float32){
 	velocity := camera.movementSpeed * deltaTime;
 	if (direction == UP){
-		fmt.Println(camera.position)
 		if(int32(camera.position[1]) > 0){
 			camera.position = camera.position.Sub(camera.up.Mul(velocity))
 		}
 	}
 	if (direction == DOWN){
-		fmt.Println(camera.position)
 		if(int32(camera.position[1]) < camera.wordHeight){
 			camera.position = camera.position.Add(camera.up.Mul(velocity))
 		}
