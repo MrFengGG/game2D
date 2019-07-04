@@ -9,6 +9,8 @@ import(
 const (
     width  = 800
 	height = 600
+	WORD_WIDTH  float32     = 1500
+	WORD_HEIGHT float32     = 10000
 )
 var (
 	windowName = "我爱你"
@@ -33,7 +35,7 @@ func main(){
 		game2D.ProcessInput(deltaTime)
 		game2D.Update(deltaTime)
         gl.Clear(gl.COLOR_BUFFER_BIT);
-		game2D.Render()		
+		game2D.Render(deltaTime)		
 		window.SwapBuffers()
 	}
 }

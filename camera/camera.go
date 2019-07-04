@@ -1,6 +1,7 @@
 package camera
 import(
 	"github.com/go-gl/mathgl/mgl32"
+	"fmt"
 )
 type Direction int
 const (
@@ -16,14 +17,15 @@ type Camera2D struct{
 	right       mgl32.Vec3
 	movementSpeed float32
 
-	wordWidth,wordHeight,harfScreenWidth,screenHeight  int32
+	wordWidth,wordHeight float32
+	harfScreenWidth,screenHeight float32
 }
-func NewDefaultCamera(wordHeight,wordWidth,screenWidth,screenHeight int32) *Camera2D{
-	position := mgl32.Vec3{float32(wordWidth/2), float32(wordHeight/2), 0}
+func NewDefaultCamera(wordHeight,wordWidth float32, screenWidth,screenHeight float32) *Camera2D{
+	position := mgl32.Vec3{wordWidth/2, wordHeight/2, 0}
 	front    := mgl32.Vec3{0, 0, -1}
 	up		 := mgl32.Vec3{0, 1, 0}
 	right    := mgl32.Vec3{1, 0, 0}
-	movementSpeed := float32(50)
+	movementSpeed := float32(100)
 	return &Camera2D{position:position, 
 		front:front, 
 		up:up, 
@@ -48,18 +50,26 @@ func (camera *Camera2D) ProcessKeyboard(direction Direction, deltaTime float32){
 	velocity := camera.movementSpeed * deltaTime;
 	if (direction == UP){
 		if(int32(camera.position[1]) > 0){
+			fmt.Println(camera.position)
 			camera.position = camera.position.Sub(camera.up.Mul(velocity))
 		}
 	}
 	if (direction == DOWN){
-		if(int32(int32(camera.position[1]) + camera.screenHeight) < camera.wordHeight){
+		if(camera.position[1] + camera.screenHeight < camera.wordHeight){
+			fmt.Println(camera.position)
 			camera.position = camera.position.Add(camera.up.Mul(velocity))
 		}
 	}
 	if (direction == LEFT){
-		camera.position = camera.position.Sub(camera.right.Mul(velocity))
+		if(int32(camera.position[0]) > 0){
+			fmt.Println(camera.position)
+			camera.position = camera.position.Sub(camera.right.Mul(velocity))
+		}
 	}
 	if (direction == RIGHT){
-		camera.position = camera.position.Add(camera.right.Mul(velocity))
+		if(camera.position[0] + camera.harfScreenWidth * 2 < camera.wordWidth){
+			fmt.Println(camera.position)
+			camera.position = camera.position.Add(camera.right.Mul(velocity))
+		}
 	}
 }
