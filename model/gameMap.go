@@ -2,6 +2,7 @@ package model
 import(
 	"game2D/resource"
 	"game2D/sprite"
+	"game2D/physic"
 	"math"
 	"fmt"
 	"github.com/go-gl/mathgl/mgl32"
@@ -15,11 +16,12 @@ type GameMap struct{
 	widthBlockNum int
 	
 }
-func NewGameMap(height,width float32, mapFile string) *GameMap{
+//一个简单的测试用的游戏地图生成函数
+func NewGameMap(width,height float32, mapFile string) *GameMap{
 	heightBlockNum := int(math.Ceil(float64(height / BlockHeight)))
 	widthBlockNum := int(math.Ceil(float64(width / BlockWidth)))
 	grounds := heightBlockNum / 3 * 2
-	fmt.Println("size:",heightBlockNum,widthBlockNum)
+	fmt.Println("map block size:",heightBlockNum,widthBlockNum)
 	blocks := make([][]*Block,heightBlockNum)
 	for i := 0;i < heightBlockNum;i++{
 		rowBlocks := make([]*Block,widthBlockNum)
@@ -31,23 +33,37 @@ func NewGameMap(height,width float32, mapFile string) *GameMap{
 		}
 		blocks[i] = rowBlocks
 	}
-	return &GameMap{Height:height,Width:width,blocks:blocks,heightBlockNum:heightBlockNum,widthBlockNum:widthBlockNum}
+	return &GameMap{Height:height,
+					Width:width,
+					blocks:blocks,
+					heightBlockNum:heightBlockNum,
+					widthBlockNum:widthBlockNum}
 }
-func (gameMap *GameMap) CheckObjectStock(moveObj *MoveObj)(bool,bool,bool,bool){
-	xPos := x / gameMap.Width * float32(gameMap.widthBlockNum)
-	yPos := y / gameMap.Height * float32(gameMap.heightBlockNum)
-
+//检测一个物体是否与地图中的方块发生碰撞
+func (gameMap *GameMap) IsColl(gameObj GameObj)bool{
+	x,y := gameObj.GetPosition();
+	w,h := gameObj.GetSize()
+	result := false
+	startX,endX,startY,endY := gameMap.FetchBox(mgl32.Vec2{x,y},mgl32.Vec2{w,h})
+	for i:=startX;i<=endX;i++{
+		for j := startY;j<endY;j++{
+			block := gameMap.blocks[int(i)][int(j)]
+			if(block != nil){
+				if(physic.IsCollidingAABB(gameObj,block)){
+					gameMap.blocks[int(i)][int(j)] = nil
+				}
+			}
+		}
+	}
+	return result
 }
-func (gameMap *GameMap) checkObjectStock(moveObj *MoveObj,block *Block)(int,int,int,int){
-	objX,objY := block.GetPosition()
-	upStoke := x > block.
-}
-func (gameMap *GameMap) Draw(position mgl32.Vec2, zoom mgl32.Vec2, renderer *sprite.SpriteRenderer){
+//将一个物体坐标转换为地图格子坐标范围
+func (gameMap *GameMap) FetchBox(position,size mgl32.Vec2)(int,int,int,int){
 	startY := int(math.Floor(float64((position[0]) / gameMap.Width * float32(gameMap.widthBlockNum))) - 1);
 	if(startY <= 0){
 		startY = 0
 	}
-	endY := int(math.Ceil(float64((position[0] + zoom[0]) / gameMap.Width * float32(gameMap.widthBlockNum))))
+	endY := int(math.Ceil(float64((position[0] + size[0]) / gameMap.Width * float32(gameMap.widthBlockNum))))
 	if(endY >= gameMap.widthBlockNum){
 		endY = gameMap.widthBlockNum - 1
 	}
@@ -55,10 +71,15 @@ func (gameMap *GameMap) Draw(position mgl32.Vec2, zoom mgl32.Vec2, renderer *spr
 	if(startX < 0){
 		startX = 0
 	}
-	endX := int(math.Ceil(float64((position[1] + zoom[1]) / gameMap.Height * float32(gameMap.heightBlockNum))))
+	endX := int(math.Ceil(float64((position[1] + size[1]) / gameMap.Height * float32(gameMap.heightBlockNum))))
 	if(endX >= gameMap.heightBlockNum){
 		endX = gameMap.heightBlockNum - 1
 	}
+	return startX,endX,startY,endY
+}
+//渲染地图
+func (gameMap *GameMap) Draw(position mgl32.Vec2, zoom mgl32.Vec2, renderer *sprite.SpriteRenderer){
+	startX,endX,startY,endY := gameMap.FetchBox(position,zoom)
 	for i:=startX;i<=endX;i++{
 		for j := startY;j<endY;j++{
 			block := gameMap.blocks[int(i)][int(j)]
@@ -68,10 +89,3 @@ func (gameMap *GameMap) Draw(position mgl32.Vec2, zoom mgl32.Vec2, renderer *spr
 		}
 	}
 }
-func (gameMap GameMap) InOut(gameObj GameObj) bool{
-	x, y := gameObj.GetPosition()
-	height, width := gameObj.GetSize()
-	harfHeight := height / 2;
-	harfWidth := width / 2
-	return x + harfWidth / 2 > gameMap.Width || x - harfWidth < 0 || y + harfHeight > gameMap.Height || y - harfHeight < 0
-} 

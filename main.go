@@ -10,11 +10,11 @@ const (
     width  = 800
 	height = 600
 	WORD_WIDTH  float32     = 1500
-	WORD_HEIGHT float32     = 10000
+	WORD_HEIGHT float32     = 1000
 )
 var (
 	windowName = "我爱你"
-	game2D = game.NewGame(width,height)
+	game2D = game.NewGame(width,height,WORD_WIDTH,WORD_HEIGHT)
 
 	deltaTime = 0.0
 	lastFrame = 0.0

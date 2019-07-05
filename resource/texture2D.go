@@ -1,4 +1,5 @@
-package texture
+package resource
+
 import(
 	"os"
 	"image"

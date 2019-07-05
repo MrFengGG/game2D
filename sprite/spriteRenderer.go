@@ -1,27 +1,27 @@
 package sprite
 import(
-	"game2D/shader"
-	"game2D/texture"
 	"github.com/go-gl/mathgl/mgl32"
+	"game2D/resource"
 	"github.com/go-gl/gl/v4.1-core/gl"
 )
 
 type SpriteRenderer struct{
-	shader *shader.Shader
+	shader *resource.Shader
 	vao uint32
 }
-func NewSpriteRenderer(shader *shader.Shader) *SpriteRenderer{
+func NewSpriteRenderer(shader *resource.Shader) *SpriteRenderer{
 	spriteRenderer := SpriteRenderer{shader:shader}
 	spriteRenderer.initRenderData()
 	return &spriteRenderer
 }
-func(spriteRenderer *SpriteRenderer) DrawSprite(texture *texture.Texture2D, position *mgl32.Vec2, size *mgl32.Vec2, rotate float32, color *mgl32.Vec3){
+func(spriteRenderer *SpriteRenderer) DrawSprite(texture *resource.Texture2D, position *mgl32.Vec2, size *mgl32.Vec2, rotate float32, color *mgl32.Vec3,isReverseX int32){
 	model := mgl32.Translate3D(position[0], position[1], 0).Mul4(mgl32.Translate3D(0.5*size[0], 0.5*size[1], 0))
 	model = model.Mul4(mgl32.HomogRotate3D(rotate, mgl32.Vec3{0, 0, 1}))
 	model = model.Mul4(mgl32.Translate3D(-0.5*size[0], -0.5*size[1], 0))
 	model = model.Mul4(mgl32.Scale3D(size[0], size[1], 1))
 	
 	spriteRenderer.shader.SetMatrix4fv("model", &model[0])
+	spriteRenderer.shader.SetInt("reverseX", isReverseX)
 	spriteRenderer.shader.SetVector3f("spriteColor", *color)
 	texture.Use()
 

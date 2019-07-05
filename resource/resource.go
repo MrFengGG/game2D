@@ -2,13 +2,11 @@ package resource
 
 import (
 	"io/ioutil"
-	"game2D/texture"
-	"game2D/shader"
 )
 
 var (
-	textures = make(map[string]*texture.Texture2D)
-	shaders  = make(map[string]*shader.Shader)
+	textures = make(map[string]*Texture2D)
+	shaders  = make(map[string]*Shader)
 )
 
 func LoadShader(vShaderFile, fShaderFile, name string){
@@ -20,16 +18,16 @@ func LoadShader(vShaderFile, fShaderFile, name string){
 	if err != nil{
         panic(err)
 	}
-	shaders[name] = shader.Compile(string(vertexString), string(fragmentString))
+	shaders[name] = Compile(string(vertexString), string(fragmentString))
 }
-func GetShader(name string) *shader.Shader{
+func GetShader(name string) *Shader{
 	return shaders[name]
 }
 
 func LoadTexture(TEXTUREINDEX uint32, file, name string){
-	texture := texture.NewTexture2D(file, TEXTUREINDEX)
+	texture := NewTexture2D(file, TEXTUREINDEX)
 	textures[name] = texture
 }
-func GetTexture(name string) *texture.Texture2D{
+func GetTexture(name string) *Texture2D{
 	return textures[name]
 }

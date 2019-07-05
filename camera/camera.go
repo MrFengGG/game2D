@@ -1,41 +1,28 @@
 package camera
 import(
 	"github.com/go-gl/mathgl/mgl32"
-	"fmt"
-)
-type Direction int
-const (
-    UP        Direction = 0 	// 摄像机移动状态:上
-    DOWN      Direction = 1     // 下
-    LEFT      Direction = 2     // 左
-    RIGHT     Direction = 3     // 右
 )
 type Camera2D struct{
-	position    mgl32.Vec3
-	front       mgl32.Vec3
-	up          mgl32.Vec3
-	right       mgl32.Vec3
-	movementSpeed float32
-
-	wordWidth,wordHeight float32
-	harfScreenWidth,screenHeight float32
+	position,front,up     						   mgl32.Vec3
+	movementSpeed         						   float32
+	wordWidth,wordHeight,screenWidth,screenHeight  float32
 }
-func NewDefaultCamera(wordHeight,wordWidth float32, screenWidth,screenHeight float32) *Camera2D{
-	position := mgl32.Vec3{wordWidth/2, wordHeight/2, 0}
+func NewDefaultCamera(wordHeight ,wordWidth, screenWidth, screenHeight float32, position2D mgl32.Vec2) *Camera2D{
+	position := mgl32.Vec3{position2D[0], position2D[1], 0}
 	front    := mgl32.Vec3{0, 0, -1}
 	up		 := mgl32.Vec3{0, 1, 0}
-	right    := mgl32.Vec3{1, 0, 0}
 	movementSpeed := float32(100)
+
 	return &Camera2D{position:position, 
 		front:front, 
 		up:up, 
-		right:right, 
 		movementSpeed:movementSpeed,
 		wordHeight:wordHeight,
 		wordWidth:wordWidth,
 		screenHeight:screenHeight,
-		harfScreenWidth:screenWidth/2}
+		screenWidth:screenWidth}
 }
+//获取摄像头位置
 func (camera *Camera2D) GetPosition() mgl32.Vec2{
 	return mgl32.Vec2{camera.position[0], camera.position[1]}
 }
@@ -45,31 +32,30 @@ func (camera *Camera2D) GetViewMatrix() *float32{
 	view := mgl32.LookAtV(camera.position,target, camera.up)
 	return &view[0]
 }
-//键盘回调
-func (camera *Camera2D) ProcessKeyboard(direction Direction, deltaTime float32){
-	velocity := camera.movementSpeed * deltaTime;
-	if (direction == UP){
-		if(int32(camera.position[1]) > 0){
-			fmt.Println(camera.position)
-			camera.position = camera.position.Sub(camera.up.Mul(velocity))
-		}
+//重置世界边界
+func (camera *Camera2D) resetWordSize(width,height float32){
+	camera.wordWidth = width
+	camera.wordHeight = height
+}
+//重设屏幕大小
+func (camera *Camera2D) resetScreenSize(width,height float32){
+	camera.screenWidth = width
+	camera.screenHeight = height
+}
+//根据坐标转换视野
+func(camera *Camera2D) InPosition(x,y float32){
+	if(x < 0){
+		camera.position[0] = 0
+	}else if(x + camera.screenWidth > camera.wordWidth){
+		x = camera.wordWidth - camera.screenWidth
+	}else{
+		camera.position[0] = x
 	}
-	if (direction == DOWN){
-		if(camera.position[1] + camera.screenHeight < camera.wordHeight){
-			fmt.Println(camera.position)
-			camera.position = camera.position.Add(camera.up.Mul(velocity))
-		}
-	}
-	if (direction == LEFT){
-		if(int32(camera.position[0]) > 0){
-			fmt.Println(camera.position)
-			camera.position = camera.position.Sub(camera.right.Mul(velocity))
-		}
-	}
-	if (direction == RIGHT){
-		if(camera.position[0] + camera.harfScreenWidth * 2 < camera.wordWidth){
-			fmt.Println(camera.position)
-			camera.position = camera.position.Add(camera.right.Mul(velocity))
-		}
+	if(y < 0){
+		camera.position[1] = 0
+	}else if(y + camera.screenHeight < camera.wordHeight){
+		camera.position[1] = camera.wordHeight - camera.screenHeight
+	}else{
+		camera.position[1] = y
 	}
 }

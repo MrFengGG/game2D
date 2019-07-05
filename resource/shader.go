@@ -1,4 +1,5 @@
-package shader
+package resource
+
 
 import(
 	"github.com/go-gl/gl/v4.1-core/gl"
