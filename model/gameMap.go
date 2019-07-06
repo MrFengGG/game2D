@@ -20,15 +20,15 @@ type GameMap struct{
 func NewGameMap(width,height float32, mapFile string) *GameMap{
 	heightBlockNum := int(math.Ceil(float64(height / BlockHeight)))
 	widthBlockNum := int(math.Ceil(float64(width / BlockWidth)))
-	grounds := heightBlockNum / 3
-	xGrounds := widthBlockNum / 3
+	grounds := heightBlockNum / 4
+	xGrounds := widthBlockNum / 4
 	fmt.Println("map block size:",heightBlockNum,widthBlockNum)
 	blocks := make([][]*Block,heightBlockNum)
 	for i := 0;i < heightBlockNum;i++{
 		rowBlocks := make([]*Block,widthBlockNum)
-		if(i < grounds || i > grounds*2){
+		if(i < grounds || i > grounds*3){
 			for j := 0; j < widthBlockNum;j++{
-				if(j < xGrounds || j > xGrounds * 2){
+				if(j < xGrounds || j > xGrounds * 3 || i == 0){
 					gameObj := NewGameObj(resource.GetTexture("soil"),float32(j) * BlockWidth,float32(i)*BlockHeight,&mgl32.Vec2{BlockWidth,BlockHeight},0,&mgl32.Vec3{1,1,1})
 					rowBlocks[j] = &Block{GameObj:*gameObj}
 				}
@@ -51,8 +51,8 @@ func (gameMap *GameMap) IsColl(gameObj GameObj,shift mgl32.Vec2)(bool,mgl32.Vec2
 		for j := startY;j<endY;j++{
 			block := gameMap.blocks[int(i)][int(j)]
 			if(block != nil){
+				fmt.Println("blockPosition",block.GetPosition())
 				isCol,position := physic.ColldingAABBPlace(gameObj,block,shift)
-				fmt.Println(isCol,position,block.GetPosition())
 				if(isCol){
 					return isCol,position
 				}
@@ -63,19 +63,19 @@ func (gameMap *GameMap) IsColl(gameObj GameObj,shift mgl32.Vec2)(bool,mgl32.Vec2
 }
 //将一个物体坐标转换为地图格子坐标范围
 func (gameMap *GameMap) FetchBox(position,size mgl32.Vec2)(int,int,int,int){
-	startY := int(math.Floor(float64((position[0]) / gameMap.Width * float32(gameMap.widthBlockNum))) - 1);
+	startY := int(math.Floor(float64((position[0]) / gameMap.Width * float32(gameMap.widthBlockNum))))-1;
 	if(startY <= 0){
 		startY = 0
 	}
-	endY := int(math.Ceil(float64((position[0] + size[0]) / gameMap.Width * float32(gameMap.widthBlockNum))))
+	endY := int(math.Ceil(float64((position[0] + size[0]) / gameMap.Width * float32(gameMap.widthBlockNum)))) + 1
 	if(endY >= gameMap.widthBlockNum){
 		endY = gameMap.widthBlockNum - 1
 	}
-	startX := int(math.Floor(float64((position[1]) / gameMap.Height * float32(gameMap.heightBlockNum))))
+	startX := int(math.Floor(float64((position[1]) / gameMap.Height * float32(gameMap.heightBlockNum)))) -1
 	if(startX < 0){
 		startX = 0
 	}
-	endX := int(math.Ceil(float64((position[1] + size[1]) / gameMap.Height * float32(gameMap.heightBlockNum))))
+	endX := int(math.Ceil(float64((position[1] + size[1]) / gameMap.Height * float32(gameMap.heightBlockNum)))) +1
 	if(endX >= gameMap.heightBlockNum){
 		endX = gameMap.heightBlockNum - 1
 	}

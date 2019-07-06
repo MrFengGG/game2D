@@ -42,10 +42,10 @@ func ColldingAABBPlace(thisGameObj,anotherObj React,shift mgl32.Vec2) (bool,mgl3
 	}
 	colldingShift := mgl32.Vec2{0.0}
 	colldingDt := shift.Normalize()
-	fmt.Println(colldingDt)
 	for math.Abs(float64(colldingShift[0])) <= math.Abs(float64(shift[0])) && math.Abs(float64(colldingShift[1])) <= math.Abs(float64(shift[1])){
 		tempColldingShift := colldingShift.Sub(colldingDt)
 		if(WillCollidingAABB(thisGameObj,anotherObj,tempColldingShift)){
+			fmt.Println("position,temp",position,tempColldingShift,colldingShift)
 			return true,thisGameObj.GetPosition().Sub(colldingShift)
 		}
 		colldingShift = tempColldingShift
