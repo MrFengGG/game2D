@@ -4,6 +4,7 @@ import(
 	"game2D/sprite"
 	"game2D/camera"
 	"game2D/model"
+	"game2D/constant"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
@@ -88,16 +89,16 @@ func (game *Game) Init(){
 func (game *Game) ProcessInput(delta float64){
 	if(game.state == GAME_ACTIVE){
 		if(game.Keys[glfw.KeyA]){
-			game.player.Move(model.LEFT,float32(delta))
+			game.player.Move(constant.LEFT,float32(delta))
 		}
 		if(game.Keys[glfw.KeyD]){
-			game.player.Move(model.RIGHT,float32(delta))
+			game.player.Move(constant.RIGHT,float32(delta))
 		}
 		if(game.Keys[glfw.KeyW]){
-			game.player.Move(model.UP,float32(delta))
+			game.player.Move(constant.UP,float32(delta))
 		}
 		if(game.Keys[glfw.KeyS]){
-			game.player.Move(model.DOWN,float32(delta))
+			game.player.Move(constant.DOWN,float32(delta))
 		}
 	}
 }
@@ -107,12 +108,12 @@ func (game *Game) Update(delta float64){
 //渲染每一帧
 func (game *Game) Render(delta float64){
 	resource.GetShader("sprite").SetMatrix4fv("view",game.camera.GetViewMatrix())
-	game.player.MoveBy(float32(delta))
-	game.gameMap.IsColl(game.player.GameObj)
+	//game.player.MoveBy(float32(delta))
 	game.player.Draw(game.renderer)
 	//摄像头跟随
-	x,y := game.player.GetPosition()
-	game.camera.InPosition(x - game.screenWidth /2, y - game.screenHeight / 2)
+	position := game.player.GetPosition()
+	size := game.player.GetSize()
+	game.camera.InPosition(position[0] - game.screenWidth /2 + size[0], position[1] - game.screenHeight / 2 + size[1])
 	game.gameMap.Draw(game.camera.GetPosition(),
 					  mgl32.Vec2{game.screenWidth,game.screenHeight},
 					  game.renderer)

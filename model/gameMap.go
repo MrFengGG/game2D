@@ -20,15 +20,18 @@ type GameMap struct{
 func NewGameMap(width,height float32, mapFile string) *GameMap{
 	heightBlockNum := int(math.Ceil(float64(height / BlockHeight)))
 	widthBlockNum := int(math.Ceil(float64(width / BlockWidth)))
-	grounds := heightBlockNum / 3 * 2
+	grounds := heightBlockNum / 3
+	xGrounds := widthBlockNum / 3
 	fmt.Println("map block size:",heightBlockNum,widthBlockNum)
 	blocks := make([][]*Block,heightBlockNum)
 	for i := 0;i < heightBlockNum;i++{
 		rowBlocks := make([]*Block,widthBlockNum)
-		if(i > grounds){
+		if(i < grounds || i > grounds*2){
 			for j := 0; j < widthBlockNum;j++{
-				gameObj := NewGameObj(resource.GetTexture("soil"),float32(j) * BlockWidth,float32(i)*BlockHeight,&mgl32.Vec2{BlockWidth,BlockHeight},0,&mgl32.Vec3{1,1,1})
-				rowBlocks[j] = &Block{GameObj:*gameObj}
+				if(j < xGrounds || j > xGrounds * 2){
+					gameObj := NewGameObj(resource.GetTexture("soil"),float32(j) * BlockWidth,float32(i)*BlockHeight,&mgl32.Vec2{BlockWidth,BlockHeight},0,&mgl32.Vec3{1,1,1})
+					rowBlocks[j] = &Block{GameObj:*gameObj}
+				}
 			}
 		}
 		blocks[i] = rowBlocks
@@ -40,22 +43,23 @@ func NewGameMap(width,height float32, mapFile string) *GameMap{
 					widthBlockNum:widthBlockNum}
 }
 //检测一个物体是否与地图中的方块发生碰撞
-func (gameMap *GameMap) IsColl(gameObj GameObj)bool{
-	x,y := gameObj.GetPosition();
-	w,h := gameObj.GetSize()
-	result := false
-	startX,endX,startY,endY := gameMap.FetchBox(mgl32.Vec2{x,y},mgl32.Vec2{w,h})
+func (gameMap *GameMap) IsColl(gameObj GameObj,shift mgl32.Vec2)(bool,mgl32.Vec2){
+	position := gameObj.GetPosition();
+	size := gameObj.GetSize()
+	startX,endX,startY,endY := gameMap.FetchBox(mgl32.Vec2{position[0],position[1]},mgl32.Vec2{size[0],size[1]})
 	for i:=startX;i<=endX;i++{
 		for j := startY;j<endY;j++{
 			block := gameMap.blocks[int(i)][int(j)]
 			if(block != nil){
-				if(physic.IsCollidingAABB(gameObj,block)){
-					gameMap.blocks[int(i)][int(j)] = nil
+				isCol,position := physic.ColldingAABBPlace(gameObj,block,shift)
+				fmt.Println(isCol,position,block.GetPosition())
+				if(isCol){
+					return isCol,position
 				}
 			}
 		}
 	}
-	return result
+	return false,gameObj.GetPosition()
 }
 //将一个物体坐标转换为地图格子坐标范围
 func (gameMap *GameMap) FetchBox(position,size mgl32.Vec2)(int,int,int,int){

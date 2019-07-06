@@ -2,15 +2,10 @@ package model
 
 import(
 	"game2D/resource"
+	"game2D/constant"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
-type Direction int
-const (
-    UP        Direction = 0 	// 摄像机移动状态:上
-    DOWN      Direction = 1     // 下
-    LEFT      Direction = 2     // 左
-    RIGHT     Direction = 3     // 右
-)
 //可移动的游戏对象
 type MoveObj struct{
 	GameObj
@@ -41,18 +36,19 @@ func (moveObj *MoveObj) CheckStock(){
 	
 }
 //由用户主动发起的运动
-func(moveObj *MoveObj) Move(direction Direction, delta float32){
-	if(!moveObj.stockDown && moveObj.y + moveObj.size[1] < moveObj.gameMap.Height){
-		if(direction == DOWN){
-			moveObj.y += moveObj.flySpeed * delta
+func(moveObj *MoveObj) Move(direction constant.Direction, delta float32){
+	shift := mgl32.Vec2{0,0}
+	if(direction ==constant. DOWN){
+		if(!moveObj.stockDown && moveObj.y + moveObj.size[1] < moveObj.gameMap.Height){
+			shift[1] += moveObj.flySpeed * delta
 		}
 	}
-	if(direction == UP){
+	if(direction == constant.UP){
 		if(!moveObj.stockUp && moveObj.y > 0){
-			moveObj.y -= moveObj.flySpeed * delta
+			shift[1] -= moveObj.flySpeed * delta
 		}
 	}
-	if(direction == LEFT){
+	if(direction == constant.LEFT){
 		moveObj.ReverseX()
 		if(moveObj.moveIndex >= len(moveObj.moveTextures)){
 			moveObj.moveIndex = 0
@@ -64,10 +60,10 @@ func(moveObj *MoveObj) Move(direction Direction, delta float32){
 			moveObj.moveIndex += 1
 		}
 		if(!moveObj.stockLeft && moveObj.x > 0){
-			moveObj.x -= moveObj.movementSpeed * delta
+			shift[0] -= moveObj.movementSpeed * delta
 		}
 	}
-	if(direction == RIGHT){
+	if(direction == constant.RIGHT){
 		moveObj.ForWardX()
 		if(moveObj.moveIndex >= len(moveObj.moveTextures)){
 			moveObj.moveIndex = 0
@@ -79,8 +75,15 @@ func(moveObj *MoveObj) Move(direction Direction, delta float32){
 			moveObj.moveIndex += 1
 		}
 		if(!moveObj.stockRight && moveObj.x + moveObj.size[0] < moveObj.gameMap.Width){
-			moveObj.x += moveObj.movementSpeed * delta
+			shift[0] += moveObj.movementSpeed * delta
 		}
+	}
+	isCol,position := moveObj.gameMap.IsColl(moveObj.GameObj,shift)
+	if(isCol){
+		moveObj.SetPosition(position)
+	}else{
+		moveObj.x += shift[0]
+		moveObj.y += shift[1]
 	}
 }
 //被动的运动,下坠等
