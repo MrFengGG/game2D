@@ -3,7 +3,6 @@ package physic
 import(
 	"github.com/go-gl/mathgl/mgl32"
 	"math"
-	"fmt"
 )
 
 //检测两个矩形是否发生碰撞
@@ -45,7 +44,6 @@ func ColldingAABBPlace(thisGameObj,anotherObj React,shift mgl32.Vec2) (bool,mgl3
 	for math.Abs(float64(colldingShift[0])) <= math.Abs(float64(shift[0])) && math.Abs(float64(colldingShift[1])) <= math.Abs(float64(shift[1])){
 		tempColldingShift := colldingShift.Sub(colldingDt)
 		if(WillCollidingAABB(thisGameObj,anotherObj,tempColldingShift)){
-			fmt.Println("position,temp",position,tempColldingShift,colldingShift)
 			return true,thisGameObj.GetPosition().Sub(colldingShift)
 		}
 		colldingShift = tempColldingShift

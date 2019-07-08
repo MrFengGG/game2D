@@ -19,6 +19,8 @@ type MoveObj struct{
 	flySpeed float32
 	//移动时的动画纹理
 	moveTextures []*resource.Texture2D
+	//静止时的纹理
+	stantTexture *resource.Texture2D
 	//游戏地图
 	gameMap  *GameMap
 	//当前运动帧
@@ -28,12 +30,20 @@ type MoveObj struct{
 }
 
 func NewMoveObject(gameObj GameObj,movementSpeed,flySpeed float32, moveTextures []*resource.Texture2D,gameMap *GameMap) *MoveObj{
-	moveObj := &MoveObj{GameObj:gameObj,movementSpeed:movementSpeed,fallSpeed:100,gameMap:gameMap,moveTextures:moveTextures,flySpeed:flySpeed,moveIndex:0,moveDelta:0}
+	moveObj := &MoveObj{GameObj:gameObj,
+						movementSpeed:movementSpeed,
+						fallSpeed:100,
+						gameMap:gameMap,
+						moveTextures:moveTextures,
+						flySpeed:flySpeed,
+						moveIndex:0,
+						moveDelta:0,
+						stantTexture:gameObj.texture}
 	return moveObj
 }
-
-func (moveObj *MoveObj) CheckStock(){
-	
+//恢复静止
+func (moveObj *MoveObj) Stand(){
+	moveObj.texture = moveObj.stantTexture
 }
 //由用户主动发起的运动
 func(moveObj *MoveObj) Move(direction constant.Direction, delta float32){

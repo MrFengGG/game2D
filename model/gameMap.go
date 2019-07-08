@@ -51,7 +51,6 @@ func (gameMap *GameMap) IsColl(gameObj GameObj,shift mgl32.Vec2)(bool,mgl32.Vec2
 		for j := startY;j<endY;j++{
 			block := gameMap.blocks[int(i)][int(j)]
 			if(block != nil){
-				fmt.Println("blockPosition",block.GetPosition())
 				isCol,position := physic.ColldingAABBPlace(gameObj,block,shift)
 				if(isCol){
 					return isCol,position

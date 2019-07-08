@@ -78,7 +78,7 @@ func (game *Game) Init(){
 										  game.screenHeight,
 										  mgl32.Vec2{game.worldWidth/2 - game.screenWidth/2, game.worldHeight/2 - game.screenHeight/2})
 
-	game.player = model.NewMoveObject(*gameObj,200,200,[]*resource.Texture2D{resource.GetTexture("1"),
+	game.player = model.NewMoveObject(*gameObj,1000,1000,[]*resource.Texture2D{resource.GetTexture("1"),
 																			resource.GetTexture("2"),
 																			resource.GetTexture("3"),
 																			resource.GetTexture("4"),
@@ -88,17 +88,25 @@ func (game *Game) Init(){
 //处理输入
 func (game *Game) ProcessInput(delta float64){
 	if(game.state == GAME_ACTIVE){
+		playerMove := false
 		if(game.Keys[glfw.KeyA]){
+			playerMove = true
 			game.player.Move(constant.LEFT,float32(delta))
 		}
 		if(game.Keys[glfw.KeyD]){
+			playerMove = true
 			game.player.Move(constant.RIGHT,float32(delta))
 		}
 		if(game.Keys[glfw.KeyW]){
+			playerMove = true
 			game.player.Move(constant.UP,float32(delta))
 		}
 		if(game.Keys[glfw.KeyS]){
+			playerMove = true
 			game.player.Move(constant.DOWN,float32(delta))
+		}
+		if(!playerMove){
+			game.player.Stand()
 		}
 	}
 }
